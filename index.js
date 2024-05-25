@@ -26,9 +26,11 @@ app.
       res.json({ status: "sucess" }))
   })
 
-  .delete((req, res) => {
-
-
+  .delete(async (req, res) => {
+    const response = await fetch("/delete/:id", users);
+    if (response.status != 204) {
+      throw Error("Cannot delete your item from list");
+    }
     return res.json({
       status: "pending"
     })
