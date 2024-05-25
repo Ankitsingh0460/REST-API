@@ -19,22 +19,31 @@ app.
     const user = users.find((user) => user.id === id);
     return res.json(user);
   })
-  .patch((req, res) => { return res.json({ status: "pending" }) })
-  .delete((req, res) => { return res.json({ status: "pending" }) });
+  .patch((req, res) => {
+    const id = req.params.id;
+    data[id].checked = !data[id].checked;
+    fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), "utf-8",
+      res.json({ status: "sucess" }))
+  })
+
+  .delete((req, res) => {
+
+
+    return res.json({
+      status: "pending"
+    })
+  });
 
 
 app.post("/api/users", (req, res) => {
   const body = req.body;
   users.push({ ...body, id: users.length + 1 })
   fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err, data) => {
-    return res.json({ status: "pending" })
+    return res.json({ status: "sucess", id: users.length })
   })
 
 
 })
-
-
-
 app.listen(port, () => {
   console.log(`server is listening ${port}`);
 });
