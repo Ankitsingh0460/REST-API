@@ -1,10 +1,39 @@
 const express = require("express");
 const users = require("./MOCK_DATA.json")
+const mongoose = require("mongoose");
 const app = express();
 const fs = require("fs");
 const port = 4000;
 
+//connection
 
+mongoose.connect("mongodb://127.0.0.1:27017/demoApp")
+  .then(() => console.log("mongodb is connected"))
+  .catch((err) => console.log("error", err))
+
+//schema
+const userSchema = new mongoose.Schema({
+  first_name: {
+    type: String,
+    required: true,
+  },
+  last_name: {
+    type: String,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  Job_tital: {
+    type: String,
+  },
+  gender: {
+    type: String,
+  }
+});
+
+const User = mongoose.model("user", userSchema);
 
 app.use(express.urlencoded({ extended: false }));
 
@@ -37,13 +66,17 @@ app.
   });
 
 
-app.post("/api/users", (req, res) => {
+app.post("/api/users", async (req, res) => {
   const body = req.body;
-  users.push({ ...body, id: users.length + 1 })
-  fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err, data) => {
-    return res.json({ status: "sucess", id: users.length })
+  const result = await User.create({
+    first_name: body.first_name,
+    last_name: body.last_name,
+    email: body.email,
+    gender: body.gender,
+    Job_tital: body.Job_tital,
   })
-
+  console.log(result)
+  return res.status(201).json({ msg: "success" })
 
 })
 app.listen(port, () => {
